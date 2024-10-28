@@ -17,6 +17,17 @@ const DocSum = () => {
     const [fileContent, setFileContent] = useState<string>('');
     const [response, setResponse] = useState<string>('');
     
+    let messagesEnd:HTMLDivElement;
+
+    const scrollToView = () => {
+        if (messagesEnd) {
+            messagesEnd.scrollTop = messagesEnd.scrollHeight;
+        }
+    };
+    useEffect(()=>{
+        scrollToView()
+    },[response])
+
     useEffect(() => {
         if(isFile){
             setValue('')
@@ -72,17 +83,11 @@ const DocSum = () => {
         onmessage(msg) {
             if (msg?.data != "[DONE]") {
                 try {
-                    const res = JSON.parse(msg.data)
-                    const logs = res.ops;
-                    logs.forEach((log: { op: string; path: string; value: string }) => {
-                        if (log.op === "add") {
-                            if (
-                                log.value !== "</s>" && log.path.endsWith("/streamed_output/-") && log.path.length > "/streamed_output/-".length
-                            ) {
-                               setResponse(prev=>prev+log.value);
-                            }
-                        }
-                    });
+                    const match = msg.data.match(/b'([^']*)'/);
+                    if (match && match[1] != "</s>") {
+                        const extractedText = match[1];
+                        setResponse(prev => (prev + extractedText.replace("<|eot_id|>", "").replace(/\\n/g, "\n")));
+                    }
                 } catch (e) {
                     console.log("something wrong in msg", e);
                     throw e;
@@ -106,7 +111,7 @@ const DocSum = () => {
             <div className={styleClasses.docSumContent}>
                 <div className={styleClasses.docSumContentMessages}>
                     <div className={styleClasses.docSumTitle}>
-                        <Title order={3}>Doc Summary</Title>
+                        <Title order={3}>Content Summarizer</Title>
                     </div>
                     <div>
                         <Text size="lg" >Please upload file or paste content for summarization.</Text>
@@ -139,7 +144,10 @@ const DocSum = () => {
                         <Button loading={isGenerating} loaderProps={{ type: 'dots' }} onClick={handleSubmit}>Generate Summary</Button>
                     </div>
                     {response && (
-                        <div className={styleClasses.docSumResult}>
+                        <div className={styleClasses.docSumResult} ref={(el) => {
+                            if(el)
+                                messagesEnd = el;
+                        }}>
                             <Markdown content={response} />
                         </div>
                     )}
