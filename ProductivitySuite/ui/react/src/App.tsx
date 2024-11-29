@@ -18,9 +18,9 @@ import { useAppDispatch } from "./redux/store";
 import { setUser } from "./redux/User/userSlice";
 import { useEffect } from "react";
 
-const title = "Chat QnA"
+const title = "Digital Assistant"
 const navList: SidebarNavList = [
-  { icon: IconMessages, label: "Chat Qna", path: "/", children: <Conversation title={title} /> },
+  { icon: IconMessages, label: "Digital Assistant", path: "/", children: <Conversation title={title} /> },
   { icon: IconCode, label: "CodeGen", path: "/codegen", children: <CodeGen /> },
   { icon: IconFileTextAi, label: "DocSum", path: "/docsum", children: <DocSum /> },
   { icon: IconFileInfo, label: "FaqGen", path: "/faqgen", children: <FaqGen /> },

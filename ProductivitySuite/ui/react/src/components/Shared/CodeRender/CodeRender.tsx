@@ -11,7 +11,6 @@ type CodeRenderProps = {
 }
 const CodeRender = ({ cleanCode, language, inline }:CodeRenderProps) => {
     cleanCode = String(cleanCode).replace(/\n$/, '').replace(/^\s*[\r\n]/gm, '') //right trim and remove empty lines from the input
-    console.log(styles)
     try {
         return inline ? (<code className='inline-code'><i>{cleanCode}</i></code>) : (
             <div className={styles.code}>
